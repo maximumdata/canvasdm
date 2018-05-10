@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Example App</title>
+    <link rel="/sass/style.sass">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="root" {{#if user}}data-user="{{{user}}}"{{/if}}>
+
+    {{{body}}}
+
+    <script src="/js/common.js" charset="utf-8"></script>
+    <script src="/js/{{#if type}}{{{type}}}{{else}}dm{{/if}}.js" charset="utf-8"></script>
+</body>
+</html>

@@ -19,7 +19,7 @@ app.use(bodyParser.json())
 app.use(sassMiddleware({
     src: path.join(__dirname, 'public'),
     dest: path.join(__dirname, 'public'),
-    debug: true,
+    debug: false,
     indentedSyntax: true,
     outputStyle: 'compressed'
 }));
@@ -38,11 +38,15 @@ let requireLogin = (req, res, next) => {
 
 
 app.get('/', function (req, res) {
-    res.redirect('/dm');
+    res.redirect('/player');
+});
+
+app.get('/player', (req, res) => {
+    res.render('home', {js: 'anon'});
 });
 
 app.get('/player/:name', (req, res) => {
-    res.render('home', {user: req.params.name, type: 'player'});
+    res.render('home', {user: req.params.name, js: 'player'});
 });
 
 
@@ -59,11 +63,18 @@ app.post('/login', (req, res) => {
     }
 });
 
+app.all('/logout', (req, res) => {
+    if (req.session.isAuth) {
+        req.session.isAuth = false;
+    }
+    res.redirect('/login');
+})
+
 app.all('/dm/*', requireLogin, (req, res, next) => next());
 
 app.get('/dm', requireLogin, (req, res) => {
-    res.render('home', {user: 'dm'});
+    res.render('home', {user: 'dm', js: 'dm'});
 });
 
 
-app.listen(3000);
+app.listen(3001);

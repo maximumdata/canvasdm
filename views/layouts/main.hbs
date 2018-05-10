@@ -10,7 +10,9 @@
 
     {{{body}}}
 
-    <script src="/js/common.js" charset="utf-8"></script>
-    <script src="/js/{{#if type}}{{{type}}}{{else}}dm{{/if}}.js" charset="utf-8"></script>
+    {{#if js}}
+        <script src="/js/common.js" charset="utf-8"></script>
+        <script src="/js/{{js}}.js" charset="utf-8"></script>
+    {{/if}}
 </body>
 </html>

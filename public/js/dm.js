@@ -1,5 +1,6 @@
 console.log('you the real dm now dawg');
 
+let socket = io.connect()
 
 let createButton = () => {
     let btn = document.createElement('button');

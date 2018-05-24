@@ -1,10 +1,12 @@
-var express = require('express');
-var exphbs  = require('express-handlebars');
+const express = require('express');
+const exphbs  = require('express-handlebars');
 const path = require('path');
 const session = require('express-session');
 const sassMiddleware = require('node-sass-middleware');
 const bodyParser = require('body-parser');
-var app = express();
+const io = require('socket.io');
+const socketstuff = require('./socketstuff.js');
+const app = express();
 
 app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'main'}));
 app.set('view engine', '.hbs');
@@ -38,11 +40,11 @@ let requireLogin = (req, res, next) => {
 
 
 app.get('/', function (req, res) {
-    res.redirect('/player');
+  res.render('home', {js: 'anon'});
 });
 
 app.get('/player', (req, res) => {
-    res.render('home', {js: 'anon'});
+  res.redirect('/');
 });
 
 app.get('/player/:name', (req, res) => {
@@ -77,4 +79,6 @@ app.get('/dm', requireLogin, (req, res) => {
 });
 
 
-app.listen(3001);
+let server = app.listen(3001);
+let socketio = io.listen(server);
+socketstuff.bindEvents(socketio);

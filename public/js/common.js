@@ -9,11 +9,12 @@ let mouse = {
     click: false,
     move: false,
     pos: { x: 0, y: 0 },
-    pos_prev: false
+    pos_prev: false,
+    mode: 'draw'
 };
 
 socket.on('draw_line', data => {
-    localLines.push(data.line);
+    localLines.push(data);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -25,8 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('root').dataset.user == 'dm') {
         canvas.width = width;
         // smaller height for dm because phone aspect ratios are fucking awful
-        canvas.height = height - 150;
-        canvas.style.border = '1px solid black';
+        canvas.height = height; // - 150;
+        //canvas.style.border = '1px solid black';
     } else {
         canvas.width = width;
         canvas.height = height;
@@ -52,14 +53,15 @@ const drawEntities = () => {
         );
         context.fillStyle = ent.color;
         context.fill();
-        context.lineWidth = 5;
+        context.lineWidth = 2;
         context.strokeStyle = 'black';
         context.stroke();
     });
 };
 
 const drawLines = () => {
-    localLines.forEach(line => {
+    localLines.forEach(data => {
+        let line = data.line;
         context.lineWidth = 4;
         context.beginPath();
         // context.moveTo(line[0].x, line[0].y);
@@ -70,10 +72,54 @@ const drawLines = () => {
         context.lineWidth = 1;
     });
 };
-
+// let p = 0,
+//     bh = height,
+//     bw = width;
+// const drawBoard = () => {
+//     for (let x = 0; x <= width; x += 50 / width) {
+//         context.moveTo(x * width, 0);
+//         context.lineTo(x * width, height);
+//     }
+//
+//     for (let y = 0; y <= height; y += 50 / height) {
+//         context.moveTo(0, y * height);
+//         context.lineTo(width, y * height);
+//     }
+//     context.strokeStyle = 'black';
+//     context.stroke();
+// };
+// const drawBoard = () => {
+//     for (var x = 0; x <= bw; x += 0.05) {
+//         context.moveTo((0.5 + x) * width, 0);
+//         context.lineTo((0.5 + x) * width, bh * height);
+//     }
+//
+//     for (var x = 0; x <= bh; x += 0.05) {
+//         context.moveTo(0, (0.5 + x) * height);
+//         context.lineTo(bw * width, (0.5 + x) * height);
+//     }
+//
+//     context.strokeStyle = 'black';
+//     context.stroke();
+// };
+// function drawBoard() {
+//     for (var x = 0; x <= bw; x += 40) {
+//         context.moveTo(0.5 + x + p, p);
+//         context.lineTo(0.5 + x + p, bh + p);
+//     }
+//
+//     for (var x = 0; x <= bh; x += 40) {
+//         context.moveTo(p, 0.5 + x + p);
+//         context.lineTo(bw + p, 0.5 + x + p);
+//     }
+//
+//     context.strokeStyle = 'black';
+//     context.stroke();
+// }
 const draw = () => {
     clearCanvas();
     // drawGrid();
+    // drawBoard();
     drawLines();
     drawEntities();
 };
@@ -118,4 +164,11 @@ const animate = () => {
 
 socket.on('getEntitiesFromServer', entities => {
     localEnts = entities;
+    if (document.body.dataset.user === 'dm') {
+        updateEntList(entities);
+    }
+});
+
+socket.on('getLinesFromServer', lines => {
+    localLines = lines;
 });

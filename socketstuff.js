@@ -51,6 +51,52 @@ const bindDMEvents = client => {
         console.log(`\tsocket.io:: DM disconnected`);
         game.socketio.sockets.emit('getEntitiesFromServer', game.entities);
     });
+    client.on('undoLine', what => {
+        if (game.lineHistory.length > 2) {
+            console.log('game.lineHistory.length', game.lineHistory.length);
+            try {
+                while (
+                    game.lineHistory[game.lineHistory.length - 1].id == what
+                ) {
+                    game.lineHistory.pop();
+                }
+            } catch (err) {}
+            game.socketio.emit('getLinesFromServer', game.lineHistory);
+        }
+    });
+
+    client.on('newEnt', pos => {
+        var newEnt = new EntityModel({
+            id: Date.now(),
+            color: 'orange',
+            x: pos.x,
+            y: pos.y
+        });
+        game.entities.push(newEnt);
+        game.socketio.emit('getEntitiesFromServer', game.entities);
+    });
+    client.on('delEnt', entID => {
+        let index = game.entities.findIndex(e => {
+            return e.id == entID;
+        });
+        if (index > -1) {
+            game.entities.splice(index, 1);
+            game.socketio.emit('getEntitiesFromServer', game.entities);
+        }
+    });
+    client.on('moveEnt', change => {
+        console.log('change', change);
+        game.entities.find((ent, iterator) => {
+            console.log('ent.id', ent.id);
+            if (ent.id == change.id) {
+                console.log('ent', ent);
+                game.entities[iterator].x = change.x;
+                game.entities[iterator].y = change.y;
+                console.log('ent after', ent);
+            }
+        });
+        game.socketio.emit('getEntitiesFromServer', game.entities);
+    });
 };
 
 const bindPlayerEvents = client => {
@@ -72,7 +118,8 @@ const bindPlayerEvents = client => {
         var newPlayerForClient = new EntityModel({
             id: client.id,
             name: getNameFromURL(client),
-            color: getColorByName(client)
+            color: getColorByName(client),
+            type: 'player'
         });
 
         game.entities.push(newPlayerForClient);
@@ -131,12 +178,12 @@ const init = socketio => {
         });
 
         client.on('draw_line', function(data) {
-            game.lineHistory.push(data.line);
-            game.socketio.emit('draw_line', { line: data.line });
+            game.lineHistory.push(data);
+            game.socketio.emit('draw_line', { line: data.line, id: data.id });
         });
 
         game.lineHistory.forEach(line => {
-            client.emit('draw_line', { line });
+            client.emit('draw_line', line);
         });
     });
 };

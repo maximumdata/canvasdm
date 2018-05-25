@@ -1,5 +1,5 @@
 const express = require('express');
-const exphbs  = require('express-handlebars');
+const exphbs = require('express-handlebars');
 const path = require('path');
 const session = require('express-session');
 const sassMiddleware = require('node-sass-middleware');
@@ -8,26 +8,29 @@ const io = require('socket.io');
 const socketstuff = require('./socketstuff.js');
 const app = express();
 
-app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'main'}));
+app.engine('.hbs', exphbs({ extname: '.hbs', defaultLayout: 'main' }));
 app.set('view engine', '.hbs');
-app.use(session({ secret: 'keyboard cat', saveUninitialized: true, resave: false}));
+app.use(
+    session({ secret: 'keyboard cat', saveUninitialized: true, resave: false })
+);
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
-app.use(sassMiddleware({
-    src: path.join(__dirname, 'public'),
-    dest: path.join(__dirname, 'public'),
-    debug: false,
-    indentedSyntax: true,
-    outputStyle: 'compressed'
-}));
+app.use(
+    sassMiddleware({
+        src: path.join(__dirname, 'public'),
+        dest: path.join(__dirname, 'public'),
+        debug: false,
+        indentedSyntax: true,
+        outputStyle: 'compressed'
+    })
+);
 
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 let requireLogin = (req, res, next) => {
     if (req.session.isAuth) {
@@ -35,22 +38,19 @@ let requireLogin = (req, res, next) => {
     } else {
         res.redirect('login');
     }
-}
+};
 
-
-
-app.get('/', function (req, res) {
-  res.render('home', {js: 'anon'});
+app.get('/', function(req, res) {
+    res.render('home', { js: 'anon' });
 });
 
 app.get('/player', (req, res) => {
-  res.redirect('/');
+    res.redirect('/');
 });
 
 app.get('/player/:name', (req, res) => {
-    res.render('home', {user: req.params.name, js: 'player'});
+    res.render('home', { user: req.params.name, js: 'player' });
 });
-
 
 app.get('/login', (req, res) => {
     res.render('login');
@@ -70,14 +70,13 @@ app.all('/logout', (req, res) => {
         req.session.isAuth = false;
     }
     res.redirect('/login');
-})
+});
 
 app.all('/dm/*', requireLogin, (req, res, next) => next());
 
 app.get('/dm', requireLogin, (req, res) => {
-    res.render('home', {user: 'dm', js: 'dm'});
+    res.render('home', { user: 'dm', js: 'dm', dm: true });
 });
-
 
 let server = app.listen(3001);
 let socketio = io.listen(server);

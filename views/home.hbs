@@ -1,1 +1,24 @@
 <canvas id="canvas"></canvas>
+{{#if dm}}
+<div class="dm">
+    <ul>
+        <div>
+            <button type="button" name="button" id="undoLine">Undo Line</button>
+        </div>
+        <div>
+            <!-- <label for="entList">Entity List</label><br> -->
+            <select class="" name="entList" id="entList" data-player=false></select>
+        </div>
+        <div>
+            <button id="delEnt">Delete Entity</button>
+        </div>
+        <div>
+            <select name="mouseMode" id="mouseMode">
+                <option value="draw">Draw</option>
+                <option value="newEnt">New Ent</option>
+                <option value="moveEnt">Move Ent</option>
+            </select>
+        </div>
+    </ul>
+</div>
+{{/if}}

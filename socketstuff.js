@@ -1,134 +1,146 @@
 let game = {
-  players: [],
-  entities: [],
-  dm: null,
-  socketio: null
-}
+    entities: [],
+    dm: null,
+    socketio: null,
+    lineHistory: []
+};
 
 const fs = require('fs');
 const util = require('util');
 const shortid = require('shortid');
-const PlayerModel = require('./PlayerModel.js');
+const EntityModel = require('./EntityModel.js');
 
 const findIndex = (needle, haystack) => {
-  haystack.find((hay, iterator) => {
-    if (hay.id === needle.id ) {
-      return iterator;
-    }
-  });
-  // for(var i = game.players.length - 1; i>=0; i--) {
-  //   if(game.players[i].id == player.id) {
-  //     return i;
-  //   }
-  // }
+    haystack.find((hay, iterator) => {
+        if (hay.id === needle.id) {
+            return iterator;
+        }
+    });
+};
 
-}
+const getNameFromURL = client => {
+    return client.handshake.headers.referer.split('player/')[1];
+};
 
-const getListOfUserIDsFromArray = () => {
-  return game.players.map((player) => {
-    return player.id;
-  });
-}
+const getColorByName = client => {
+    let name = getNameFromURL(client);
+    let colorMap = {
+        ryan: 'blue',
+        cait: 'yellow'
+    };
+    return colorMap[name];
+};
 
-const getNameFromURL = (client) => {
-  // return 'test';
-  return client.handshake.headers.referer.split('player/')[1];
-}
-const checkIfDM = (client) => {
-  return client.handshake.headers.referer.split('/')[3] === 'dm';
-}
-const getUserTypeFromURL = (client) => {
-  let isDM = checkIfDM(client) ? 'dm' : false;
-  let isPlayer = getNameFromURL(client) ? 'player' : false;
-  return isDM || isPlayer || 'viewer';
-}
+const checkIfDM = client => {
+    return client.handshake.headers.referer.split('/')[3] === 'dm';
+};
 
-const bindDMEvents = (client) => {
-  client.id = 'DM';
-  console.log(`\tsocket.io:: DM connected`);
-  game.dm = client;
+const getUserTypeFromURL = client => {
+    let isDM = checkIfDM(client) ? 'dm' : false;
+    let isPlayer = getNameFromURL(client) ? 'player' : false;
+    return isDM || isPlayer || 'viewer';
+};
 
-  client.on('disconnect', () => {
-    game.dm = null;
-    console.log(`\tsocket.io:: DM disconnected`)
-    game.socketio.sockets.emit('getPlayersFromServer', game.players, getListOfUserIDsFromArray());
-  });
+const bindDMEvents = client => {
+    client.id = 'DM';
+    console.log(`\tsocket.io:: DM connected`);
+    game.dm = client;
 
+    client.on('disconnect', () => {
+        game.dm = null;
+        console.log(`\tsocket.io:: DM disconnected`);
+        game.socketio.sockets.emit('getEntitiesFromServer', game.entities);
+    });
+};
 
-
-}
-
-const bindPlayerEvents = (client) => {
-  const playerName = getNameFromURL(client);
-  const playerFound = game.players.find((player) => {
-    return player.name === playerName;
-  })
-  if (playerFound) {
-    return client.emit('alreadyUsingName', playerName);
-  }
-  // find out what url they hit
-  if (playerName) {
-    client.id = shortid.generate();
-    console.log(`\tsocket.io:: player ${client.id}(${playerName}) connected`);
-    var newPlayerForClient = new PlayerModel(client.id, getNameFromURL(client));
-
-    game.players.push(newPlayerForClient);
-    client.emit('onConnected', newPlayerForClient );
-
-  }
-
-  client.on('disconnect', () => {
-    game.players.forEach((player, iterator) => {
-      if (player.id == client.id) {
-        game.players.splice(iterator, 1);
-        console.log(`\tsocket.io:: player ${client.id}(${playerName}) disconnected`);
-      }
+const bindPlayerEvents = client => {
+    const playerName = getNameFromURL(client);
+    const playerFound = game.entities.find(player => {
+        return player.name === playerName;
     });
 
-    game.socketio.sockets.emit('getPlayersFromServer', game.players, getListOfUserIDsFromArray());
-  });
-}
-
-const bindViewerEvents = (client) => {
-  // bindPlayerEvents(client);
-  console.log(`\tsocket.io:: viewer connected`);
-  client.on('disconnect', () => {
-    console.log(`\tsocket.io:: viewer disconnected`);
-  })
-}
-
-const init = (socketio) => {
-  game.socketio = socketio;
-  game.socketio.sockets.on('connection', (client) => {
-    const userType = getUserTypeFromURL(client);
-    client.userType = userType;
-    switch(userType) {
-      case 'dm':
-        bindDMEvents(client);
-        break;
-      case 'player':
-        bindPlayerEvents(client);
-        break;
-      default:
-        bindViewerEvents(client);
+    if (playerFound) {
+        return client.emit('alreadyUsingName', playerName);
     }
 
-    game.socketio.sockets.emit('getPlayersFromServer', game.players, getListOfUserIDsFromArray());
+    if (playerName) {
+        client.id = shortid.generate();
+        console.log(
+            `\tsocket.io:: player ${client.id}(${playerName}) connected`
+        );
 
+        var newPlayerForClient = new EntityModel({
+            id: client.id,
+            name: getNameFromURL(client),
+            color: getColorByName(client)
+        });
 
-    client.on('playerMoved', (playerWhoMoved) => {
-      game.players[findIndex(playerWhoMoved, game.players)] = playerWhoMoved;
-      game.socketio.sockets.emit('getPlayersFromServer', game.players, getListOfUserIDsFromArray());
+        game.entities.push(newPlayerForClient);
+        client.emit('onConnected', newPlayerForClient);
+    }
+
+    client.on('disconnect', () => {
+        game.entities.forEach((player, iterator) => {
+            if (player.id == client.id) {
+                game.entities.splice(iterator, 1);
+                console.log(
+                    `\tsocket.io:: player ${
+                        client.id
+                    }(${playerName}) disconnected`
+                );
+            }
+        });
+
+        game.socketio.sockets.emit('getEntitiesFromServer', game.entities);
     });
+};
 
-    client.on('entityChange', (entity) => {
-      game.entities[findIndex(entity, game.entities)] = entity;
-      game.socketio.sockets.emit('getEntitiesFromServer', game.entities);
-    })
-  })
+const bindViewerEvents = client => {
+    // bindPlayerEvents(client);
+    console.log(`\tsocket.io:: viewer connected`);
+    client.on('disconnect', () => {
+        console.log(`\tsocket.io:: viewer disconnected`);
+    });
+};
 
-}
+const init = socketio => {
+    game.socketio = socketio;
+    game.socketio.on('connection', client => {
+        const userType = getUserTypeFromURL(client);
+        client.userType = userType;
+        switch (userType) {
+            case 'dm':
+                bindDMEvents(client);
+                break;
+            case 'player':
+                bindPlayerEvents(client);
+                break;
+            default:
+                bindViewerEvents(client);
+        }
+
+        game.socketio.emit('getEntitiesFromServer', game.entities);
+
+        client.on('entityChange', entity => {
+            game.entities.find((ent, iterator) => {
+                if (ent.id === entity.id) {
+                    game.entities[iterator] = entity;
+                }
+            });
+            game.socketio.emit('getEntitiesFromServer', game.entities);
+        });
+
+        client.on('draw_line', function(data) {
+            game.lineHistory.push(data.line);
+            game.socketio.emit('draw_line', { line: data.line });
+        });
+
+        game.lineHistory.forEach(line => {
+            client.emit('draw_line', { line });
+        });
+    });
+};
 
 module.exports = {
-  bindEvents: init
-}
+    bindEvents: init
+};

@@ -6,7 +6,7 @@ let game = {
 };
 
 const shortid = require('shortid');
-const randomColor = require('randomColor');
+const randomColor = require('randomcolor');
 const EntityModel = require('./EntityModel.js');
 
 const findIndex = (needle, haystack) => {

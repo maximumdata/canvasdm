@@ -104,7 +104,7 @@ const bindPlayerEvents = client => {
     });
 
     if (playerFound) {
-        return client.emit('alreadyUsingName', playerName);
+        return client.emit('onConnected', playerFound);
     }
 
     if (playerName) {
@@ -112,21 +112,15 @@ const bindPlayerEvents = client => {
         console.log(
             `\tsocket.io:: player ${client.id}(${playerName}) connected`
         );
-        let existingPlayer = game.entities.find(ent => {
-            return ent.name == playerName;
+
+        var newPlayerForClient = new EntityModel({
+            id: client.id,
+            name: getNameFromURL(client),
+            color: randomColor(),
+            type: 'player'
         });
-        if (!existingPlayer) {
-            var newPlayerForClient = new EntityModel({
-                id: client.id,
-                name: getNameFromURL(client),
-                color: randomColor(),
-                type: 'player'
-            });
-            game.entities.push(newPlayerForClient);
-            client.emit('onConnected', newPlayerForClient);
-        } else {
-            client.emit('onConnected', existingPlayer);
-        }
+        game.entities.push(newPlayerForClient);
+        client.emit('onConnected', newPlayerForClient);
     }
 
     client.on('disconnect', () => {

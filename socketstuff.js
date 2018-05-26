@@ -84,7 +84,7 @@ const bindDMEvents = client => {
         game.socketio.emit('getEntitiesFromServer', game.entities);
     });
     client.on('resetBoard', () => {
-        game.entities = game.entities.filter((ent) => {
+        game.entities = game.entities.filter(ent => {
             if (ent.type == 'player') {
                 ent.x = 0;
                 ent.y = 0;
@@ -112,31 +112,39 @@ const bindPlayerEvents = client => {
         console.log(
             `\tsocket.io:: player ${client.id}(${playerName}) connected`
         );
-
-        var newPlayerForClient = new EntityModel({
-            id: client.id,
-            name: getNameFromURL(client),
-            color: randomColor(),
-            type: 'player'
+        let existingPlayer = game.entities.find(ent => {
+            return ent.name == playerName;
         });
-
-        game.entities.push(newPlayerForClient);
-        client.emit('onConnected', newPlayerForClient);
+        if (!existingPlayer) {
+            var newPlayerForClient = new EntityModel({
+                id: client.id,
+                name: getNameFromURL(client),
+                color: randomColor(),
+                type: 'player'
+            });
+            game.entities.push(newPlayerForClient);
+            client.emit('onConnected', newPlayerForClient);
+        } else {
+            client.emit('onConnected', existingPlayer);
+        }
     }
 
     client.on('disconnect', () => {
-        game.entities.forEach((player, iterator) => {
-            if (player.id == client.id) {
-                game.entities.splice(iterator, 1);
-                console.log(
-                    `\tsocket.io:: player ${
-                        client.id
-                    }(${playerName}) disconnected`
-                );
-            }
-        });
-
-        game.socketio.sockets.emit('getEntitiesFromServer', game.entities);
+        console.log(
+            `\tsocket.io:: player ${client.id}(${playerName}) disconnected`
+        );
+        // game.entities.forEach((player, iterator) => {
+        //     if (player.id == client.id) {
+        //         game.entities.splice(iterator, 1);
+        //         console.log(
+        //             `\tsocket.io:: player ${
+        //                 client.id
+        //             }(${playerName}) disconnected`
+        //         );
+        //     }
+        // });
+        //
+        // game.socketio.sockets.emit('getEntitiesFromServer', game.entities);
     });
 };
 

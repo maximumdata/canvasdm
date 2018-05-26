@@ -77,6 +77,14 @@ document.addEventListener('DOMContentLoaded', e => {
         if (isPlayer == 'false') {
             let curEnt = document.getElementById('entList').value;
             socket.emit('delEnt', curEnt);
+        } else {
+            let confirm = window.confirm(
+                `You're about to remove a player. Are you sure?`
+            );
+            if (confirm) {
+                let curEnt = document.getElementById('entList').value;
+                socket.emit('delEnt', curEnt);
+            }
         }
     });
 
@@ -91,8 +99,8 @@ document.addEventListener('DOMContentLoaded', e => {
     });
 
     const resetBoardEl = document.getElementById('resetBoard');
-    resetBoardEl.addEventListener('click', function (e) {
-        if(window.confirm('Do you really want to reset the board?')) {
+    resetBoardEl.addEventListener('click', function(e) {
+        if (window.confirm('Do you really want to reset the board?')) {
             socket.emit('resetBoard');
         }
     });

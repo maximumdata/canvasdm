@@ -2,23 +2,30 @@
 {{#if dm}}
 <div class="dm">
     <ul>
-        <div>
-            <button type="button" name="button" id="undoLine">Undo Line</button>
-        </div>
-        <div>
-            <!-- <label for="entList">Entity List</label><br> -->
-            <select class="" name="entList" id="entList" data-player=false></select>
-        </div>
-        <div>
-            <button id="delEnt">Delete Entity</button>
-        </div>
-        <div>
+        <li>
             <select name="mouseMode" id="mouseMode">
                 <option value="draw">Draw</option>
                 <option value="newEnt">New Ent</option>
                 <option value="moveEnt">Move Ent</option>
             </select>
-        </div>
+        </li>
+        <li>
+            <button type="button" name="button" id="undoLine">Undo Line</button>
+        </li>
+        <li>
+            <select class="" name="entList" id="entList" data-player=false></select>
+        </li>
+        <li>
+            <button id="delEnt">Delete Entity</button>
+        </li>
+        <li>
+            <select name="entColor" id="entColor">
+                <option value="orange">orange</option>
+                <option value="green">green</option>
+                <option value="blue">blue</option>
+                <option value="pink">pink</option>
+            </select>
+        </li>
     </ul>
 </div>
 {{/if}}

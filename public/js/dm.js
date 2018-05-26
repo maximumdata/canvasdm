@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', e => {
         if (mouse.mode == 'newEnt') {
             let deets = {
                 x: e.clientX / width,
-                y: e.clientY / height
+                y: e.clientY / height,
+                color: document.getElementById('entColor').value
             };
             socket.emit('newEnt', deets);
         }
@@ -66,7 +67,6 @@ document.addEventListener('DOMContentLoaded', e => {
 
     const mouseModeSel = document.getElementById('mouseMode');
     mouseModeSel.addEventListener('change', function(e) {
-        console.log('e', e);
         mouse.mode = e.target.value;
     });
 
@@ -82,6 +82,11 @@ document.addEventListener('DOMContentLoaded', e => {
 
     const entListEl = document.getElementById('entList');
     entListEl.addEventListener('change', function(e) {
+        let newID = e.target.value;
+        let isPlayer = !!localEnts.find(ent => {
+            return ent.id == newID && ent.type == 'player';
+        });
+        entListEl.dataset.player = isPlayer;
         // need to figure out if its a player and set data attribute here
     });
 });
@@ -107,4 +112,5 @@ const updateEntList = ents => {
             el.value = lastSel;
         }
     }
+    el.dispatchEvent(new Event('change'));
 };

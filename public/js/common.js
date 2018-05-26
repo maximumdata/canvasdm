@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.width = width;
         canvas.height = height;
     }
-    startAnimating(60);
+    draw();
 });
 
 const clearCanvas = () => {
@@ -122,6 +122,7 @@ const draw = () => {
     // drawBoard();
     drawLines();
     drawEntities();
+    requestAnimationFrame(draw);
 };
 
 var stop = false;
@@ -132,7 +133,7 @@ const startAnimating = fps => {
     fpsInterval = 1000 / fps;
     then = Date.now();
     startTime = then;
-    animate();
+    //animate();
 };
 
 const animate = () => {

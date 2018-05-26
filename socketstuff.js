@@ -53,7 +53,6 @@ const bindDMEvents = client => {
     });
     client.on('undoLine', what => {
         if (game.lineHistory.length > 2) {
-            console.log('game.lineHistory.length', game.lineHistory.length);
             try {
                 while (
                     game.lineHistory[game.lineHistory.length - 1].id == what
@@ -65,12 +64,12 @@ const bindDMEvents = client => {
         }
     });
 
-    client.on('newEnt', pos => {
+    client.on('newEnt', details => {
         var newEnt = new EntityModel({
             id: Date.now(),
-            color: 'orange',
-            x: pos.x,
-            y: pos.y
+            color: details.color || 'orange',
+            x: details.x,
+            y: details.y
         });
         game.entities.push(newEnt);
         game.socketio.emit('getEntitiesFromServer', game.entities);
@@ -85,14 +84,10 @@ const bindDMEvents = client => {
         }
     });
     client.on('moveEnt', change => {
-        console.log('change', change);
         game.entities.find((ent, iterator) => {
-            console.log('ent.id', ent.id);
             if (ent.id == change.id) {
-                console.log('ent', ent);
                 game.entities[iterator].x = change.x;
                 game.entities[iterator].y = change.y;
-                console.log('ent after', ent);
             }
         });
         game.socketio.emit('getEntitiesFromServer', game.entities);

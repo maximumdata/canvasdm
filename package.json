@@ -17,6 +17,7 @@
     "express-session": "^1.15.6",
     "node-sass-middleware": "^0.11.0",
     "nodemon": "^1.17.5",
+    "randomcolor": "^0.5.3",
     "reset-css": "^3.0.0",
     "shortid": "^2.2.8",
     "socket.io": "^2.1.0"

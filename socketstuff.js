@@ -6,6 +6,7 @@ let game = {
 };
 
 const shortid = require('shortid');
+const randomColor = require('randomColor');
 const EntityModel = require('./EntityModel.js');
 
 const findIndex = (needle, haystack) => {
@@ -18,15 +19,6 @@ const findIndex = (needle, haystack) => {
 
 const getNameFromURL = client => {
     return client.handshake.headers.referer.split('player/')[1];
-};
-
-const getColorByName = client => {
-    let name = getNameFromURL(client);
-    let colorMap = {
-        ryan: 'blue',
-        cait: 'yellow'
-    };
-    return colorMap[name];
 };
 
 const checkIfDM = client => {
@@ -124,7 +116,7 @@ const bindPlayerEvents = client => {
         var newPlayerForClient = new EntityModel({
             id: client.id,
             name: getNameFromURL(client),
-            color: getColorByName(client),
+            color: randomColor(),
             type: 'player'
         });
 

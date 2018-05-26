@@ -5,8 +5,6 @@ let game = {
     lineHistory: []
 };
 
-const fs = require('fs');
-const util = require('util');
 const shortid = require('shortid');
 const EntityModel = require('./EntityModel.js');
 

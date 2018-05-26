@@ -67,7 +67,8 @@ const bindDMEvents = client => {
             id: Date.now(),
             color: details.color || 'orange',
             x: details.x,
-            y: details.y
+            y: details.y,
+            name: `monster-${game.entities.length + 1}`
         });
         game.entities.push(newEnt);
         game.socketio.emit('getEntitiesFromServer', game.entities);
@@ -89,6 +90,18 @@ const bindDMEvents = client => {
             }
         });
         game.socketio.emit('getEntitiesFromServer', game.entities);
+    });
+    client.on('resetBoard', () => {
+        game.entities = game.entities.filter((ent) => {
+            if (ent.type == 'player') {
+                ent.x = 0;
+                ent.y = 0;
+                return ent;
+            }
+        });
+        game.lineHistory = [];
+        game.socketio.emit('getEntitiesFromServer', game.entities);
+        game.socketio.emit('getLinesFromServer', game.lineHistory);
     });
 };
 

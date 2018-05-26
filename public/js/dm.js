@@ -89,6 +89,13 @@ document.addEventListener('DOMContentLoaded', e => {
         entListEl.dataset.player = isPlayer;
         // need to figure out if its a player and set data attribute here
     });
+
+    const resetBoardEl = document.getElementById('resetBoard');
+    resetBoardEl.addEventListener('click', function (e) {
+        if(window.confirm('Do you really want to reset the board?')) {
+            socket.emit('resetBoard');
+        }
+    });
 });
 
 const updateEntList = ents => {

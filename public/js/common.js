@@ -17,6 +17,8 @@ socket.on('draw_line', data => {
     localLines.push(data);
 });
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
     // get canvas element and create context
     canvas = document.getElementById('canvas');
@@ -53,9 +55,11 @@ const drawEntities = () => {
         );
         context.fillStyle = ent.color;
         context.fill();
-        context.lineWidth = 2;
+        context.lineWidth = 4;
         context.strokeStyle = 'black';
-        context.stroke();
+        if(ent.selected) {
+            context.stroke();
+        }
     });
 };
 
@@ -117,6 +121,7 @@ const drawLines = () => {
 //     context.stroke();
 // }
 const draw = () => {
+    // pollControllers();
     clearCanvas();
     // drawGrid();
     // drawBoard();

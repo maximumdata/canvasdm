@@ -1,4 +1,8 @@
-console.log('you the real dm now dawg');
+console.log(`paul: 1
+    ryan: 2
+    cait: 3
+    mikep: 4
+    kayla: 5`);
 
 document.addEventListener('DOMContentLoaded', e => {
     // createButton();
@@ -102,6 +106,30 @@ document.addEventListener('DOMContentLoaded', e => {
     resetBoardEl.addEventListener('click', function(e) {
         if (window.confirm('Do you really want to reset the board?')) {
             socket.emit('resetBoard');
+        }
+    });
+
+    const setTurnEl = document.getElementById('setCurrentTurn');
+    setTurnEl.addEventListener('click', function (e) {
+        e.preventDefault();
+        let isPlayer = document.getElementById('entList').dataset.player;
+        if (isPlayer == 'false') {
+            // let curEnt = document.getElementById('entList').value;
+            // socket.emit('delEnt', curEnt);
+        } else {
+            localEnts.forEach((ent) => {
+                if(ent.type == 'player' && ent.selected == true) {
+                    ent.selected = false;
+                    socket.emit('entityChange', ent);
+                }
+            });
+            let curEnt = document.getElementById('entList').value;
+            let newSel = localEnts.find((ent) => {
+                return ent.id == curEnt
+            });
+            newSel.selected = true;
+            socket.emit('entityChange', newSel);
+            socket.emit('updateSelected', newSel);
         }
     });
 });

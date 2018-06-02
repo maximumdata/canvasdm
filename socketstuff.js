@@ -1,13 +1,45 @@
+const shortid = require('shortid');
+const randomColor = require('randomcolor');
+const EntityModel = require('./EntityModel.js');
+
 let game = {
-    entities: [],
+    entities: [
+        new EntityModel({
+            id: shortid.generate(),
+            name: '1',
+            color: '#F012BE',
+            type: 'player'
+        }),
+        new EntityModel({
+            id: shortid.generate(),
+            name: '2',
+            color: '#39CCCC',
+            type: 'player'
+        }),
+        new EntityModel({
+            id: shortid.generate(),
+            name: '3',
+            color: '#85144b',
+            type: 'player'
+        }),
+        new EntityModel({
+            id: shortid.generate(),
+            name: '4',
+            color: '#FFDC00',
+            type: 'player'
+        }),
+        new EntityModel({
+            id: shortid.generate(),
+            name: '5',
+            color: '#2ECC40',
+            type: 'player'
+        })
+    ],
     dm: null,
     socketio: null,
     lineHistory: []
 };
 
-const shortid = require('shortid');
-const randomColor = require('randomcolor');
-const EntityModel = require('./EntityModel.js');
 
 const findIndex = (needle, haystack) => {
     haystack.find((hay, iterator) => {
@@ -95,6 +127,10 @@ const bindDMEvents = client => {
         game.socketio.emit('getEntitiesFromServer', game.entities);
         game.socketio.emit('getLinesFromServer', game.lineHistory);
     });
+
+    client.on('updateSelected', (ent) => {
+        game.socketio.emit('updateSelected', ent);
+    });
 };
 
 const bindPlayerEvents = client => {
@@ -176,6 +212,10 @@ const init = socketio => {
             });
             game.socketio.emit('getEntitiesFromServer', game.entities);
         });
+
+        client.on('updateSelected', (ent) => {
+            game.socketio.emit('getEntitiesFromServer', game.entities);
+        })
 
         client.on('draw_line', function(data) {
             game.lineHistory.push(data);

@@ -5,33 +5,33 @@ const EntityModel = require('./EntityModel.js');
 let game = {
     entities: [
         new EntityModel({
-            id: shortid.generate(),
-            name: '1',
-            color: '#F012BE',
+            id: 1,
+            name: 'Kilgar',
+            color: '#cc6766',
             type: 'player'
         }),
         new EntityModel({
-            id: shortid.generate(),
-            name: '2',
-            color: '#39CCCC',
+            id: 2,
+            name: 'Baern',
+            color: '#84898e',
             type: 'player'
         }),
         new EntityModel({
-            id: shortid.generate(),
-            name: '3',
-            color: '#85144b',
+            id: 3,
+            name: 'Velna',
+            color: '#6ca0cc',
             type: 'player'
         }),
         new EntityModel({
-            id: shortid.generate(),
-            name: '4',
+            id: 4,
+            name: 'Rolf',
             color: '#FFDC00',
             type: 'player'
         }),
         new EntityModel({
-            id: shortid.generate(),
-            name: '5',
-            color: '#2ECC40',
+            id: 5,
+            name: 'Fendry',
+            color: '#5cbc5c',
             type: 'player'
         })
     ],

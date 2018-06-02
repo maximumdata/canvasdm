@@ -24,8 +24,7 @@ console.log(`paul: 1
 let selectedPlayer = null;
 
 socket.on('updateSelected', ent => {
-    rotateSelectedPlayer(Number(ent.name));
-    console.log('ent', ent);
+    rotateSelectedPlayer(Number(ent.id));
 });
 
 const rotateSelectedPlayer = (num) => {
@@ -36,15 +35,15 @@ const rotateSelectedPlayer = (num) => {
                 return ent.id == selectedPlayer.id
             });
             let curEnt = localEnts[curIndex];
-            let curNum = Number(selectedPlayer.name);
+            let curNum = Number(selectedPlayer.id);
             if (curNum < 5) {
                 let newNum = curNum + 1;
                 selectedPlayer = localEnts.find((ent) => {
-                    return (Number(ent.name) == newNum);
+                    return (Number(ent.id) == newNum);
                 });
             } else {
                 selectedPlayer = localEnts.find((ent) => {
-                    return (Number(ent.name) == 1);
+                    return (Number(ent.id) == 1);
                 });
             }
             curEnt.selected = false
@@ -78,14 +77,14 @@ const rotateSelectedPlayer = (num) => {
             let curSel = selectedPlayer;
             curSel.selected = false;
             selectedPlayer = localEnts.find((ent) => {
-                return (Number(ent.name) == num);
+                return (Number(ent.id) == num);
             });
             selectedPlayer.selected = true;
             socket.emit('entityChange', curSel);
             socket.emit('entityChange', selectedPlayer);
         } else {
             selectedPlayer = localEnts.find((ent) => {
-                return (Number(ent.name) == num);
+                return (Number(ent.id) == num);
             });
             selectedPlayer.selected = true;
             socket.emit('entityChange', selectedPlayer);
@@ -103,7 +102,6 @@ var controllers = {};
 function connecthandler(e) {
   controllers[e.gamepad.index] = e.gamepad;
   requestAnimationFrame(updateStatus);
-  console.log(e.gamepad.buttons);
 }
 
 function disconnecthandler(e) {
@@ -122,11 +120,11 @@ function updateStatus() {
   for (j in controllers) {
     var controller = controllers[j];
 
-    controller.buttons.forEach((button, index) => {
-        if (button.pressed) {
-            console.log(`button # ${index} pressed`);
-        }
-    });
+    // controller.buttons.forEach((button, index) => {
+    //     if (button.pressed) {
+    //         console.log(`button # ${index} pressed`);
+    //     }
+    // });
 
     if (controller.buttons[0].pressed) {
         rotateSelectedPlayer(1);

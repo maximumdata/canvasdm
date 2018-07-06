@@ -72,10 +72,37 @@ const drawLines = () => {
         // context.lineTo(line[1].x, line[1].y);
         context.moveTo(line[0].x * width, line[0].y * height);
         context.lineTo(line[1].x * width, line[1].y * height);
+        context.strokeStyle = "black";
         context.stroke();
         context.lineWidth = 1;
     });
 };
+
+// Box width
+var bw = width;
+// Box height
+var bh = height;
+// Padding
+var p = 0;
+function drawBoard(){
+for (var x = 0; x <= bw; x += 50) {
+    context.moveTo(0.5 + x + p, p);
+    context.lineTo(0.5 + x + p, bh + p);
+}
+
+
+for (var x = 0; x <= bh; x += 50) {
+    context.moveTo(p, 0.5 + x + p);
+    context.lineTo(bw + p, 0.5 + x + p);
+}
+
+context.strokeStyle = "grey";
+context.stroke();
+}
+
+
+
+
 // let p = 0,
 //     bh = height,
 //     bw = width;
@@ -125,6 +152,9 @@ const draw = () => {
     clearCanvas();
     // drawGrid();
     // drawBoard();
+    if (window.isViewer == true){
+        drawBoard();
+    }
     drawLines();
     drawEntities();
     requestAnimationFrame(draw);

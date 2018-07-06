@@ -22,6 +22,7 @@ console.log(`paul: 1
     mikep: 4
     kayla: 5`);
 let selectedPlayer = null;
+window.isViewer = true;
 
 socket.on('updateSelected', ent => {
     rotateSelectedPlayer(Number(ent.id));

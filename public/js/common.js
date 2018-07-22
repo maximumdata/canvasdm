@@ -153,7 +153,7 @@ const draw = () => {
     // drawGrid();
     // drawBoard();
     if (window.isViewer == true){
-        drawBoard();
+        //drawBoard();
     }
     drawLines();
     drawEntities();

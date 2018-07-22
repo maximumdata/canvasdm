@@ -6,31 +6,31 @@ let game = {
     entities: [
         new EntityModel({
             id: 1,
-            name: 'Kilgar',
+            name: 'Kris',
             color: '#cc6766',
             type: 'player'
         }),
         new EntityModel({
             id: 2,
-            name: 'Baern',
+            name: 'Issa',
             color: '#84898e',
             type: 'player'
         }),
         new EntityModel({
             id: 3,
-            name: 'Velna',
+            name: 'Kevin',
             color: '#6ca0cc',
             type: 'player'
         }),
         new EntityModel({
             id: 4,
-            name: 'Rolf',
+            name: 'Jasmine',
             color: '#FFDC00',
             type: 'player'
         }),
         new EntityModel({
             id: 5,
-            name: 'Fendry',
+            name: 'Johnnie',
             color: '#5cbc5c',
             type: 'player'
         })
@@ -39,7 +39,6 @@ let game = {
     socketio: null,
     lineHistory: []
 };
-
 
 const findIndex = (needle, haystack) => {
     haystack.find((hay, iterator) => {
@@ -128,7 +127,7 @@ const bindDMEvents = client => {
         game.socketio.emit('getLinesFromServer', game.lineHistory);
     });
 
-    client.on('updateSelected', (ent) => {
+    client.on('updateSelected', ent => {
         game.socketio.emit('updateSelected', ent);
     });
 };
@@ -213,9 +212,9 @@ const init = socketio => {
             game.socketio.emit('getEntitiesFromServer', game.entities);
         });
 
-        client.on('updateSelected', (ent) => {
+        client.on('updateSelected', ent => {
             game.socketio.emit('getEntitiesFromServer', game.entities);
-        })
+        });
 
         client.on('draw_line', function(data) {
             game.lineHistory.push(data);
